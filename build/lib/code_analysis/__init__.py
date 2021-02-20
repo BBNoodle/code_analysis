@@ -86,13 +86,13 @@ class CodeAnalysis:
             add = [_[1:].lstrip() for _ in data['diff'].split('\n') if _.startswith('+')]
             delete = [_[1:].lstrip() for _ in data['diff'].split('\n') if _.startswith('-')]
             if data['deletedFile']:
-                self._delete_files(delete, rule)
+                self.delete_files(delete, rule)
             elif data['newFile']:
-                self._new_files(add, rule)
+                self.new_files(add, rule)
             else:
-                self._old_files(add, delete, rule)
+                self.old_files(add, delete, rule)
 
-    def _new_files(self, add, _rule):
+    def new_files(self, add, _rule):
         for add_str in add:
             if len(add_str) == 0:
                 self._emptyCodeLine += 1
@@ -103,11 +103,11 @@ class CodeAnalysis:
             self._effectiveCodeLine = len(add) + self._notesCodeLine + self._emptyCodeLine
             self._addCodeLine += self._effectiveCodeLine
 
-    def _old_files(self, add, delete, _rule):
-        self._new_files(add, _rule)
-        self._delete_files(delete, _rule)
+    def old_files(self, add, delete, _rule):
+        self.new_files(add, _rule)
+        self.delete_files(delete, _rule)
 
-    def _delete_files(self, delete, _rule):
+    def delete_files(self, delete, _rule):
         for del_str in delete:
             if len(del_str) == 0:
                 self._emptyCodeLine -= 1
