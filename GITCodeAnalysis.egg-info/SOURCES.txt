@@ -1,7 +1,0 @@
-README.md
-setup.py
-GITCodeAnalysis.egg-info/PKG-INFO
-GITCodeAnalysis.egg-info/SOURCES.txt
-GITCodeAnalysis.egg-info/dependency_links.txt
-GITCodeAnalysis.egg-info/top_level.txt
-code_analysis/__init__.py

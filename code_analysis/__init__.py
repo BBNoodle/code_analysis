@@ -64,7 +64,7 @@ class CodeAnalysis:
     _effectiveCodeLine = 0
     # 注释代码行数
     _notesCodeLine = 0
-    # 空行
+    # 空行11
     _emptyCodeLine = 0
 
     def __init__(self, datas=None):
