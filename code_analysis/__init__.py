@@ -71,8 +71,9 @@ class CodeAnalysis:
         if datas is None:
             datas = list()
         self.datas = datas
+        self._main()
 
-    def main(self):
+    def _main(self):
         if len(self.datas) == 0:
             return self._addCodeLine, \
                    self._delCodeLine, \
