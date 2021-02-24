@@ -2,57 +2,9 @@
 # @Time : 2/7/21 4:36 PM 
 # @Author : mxt
 # @File : __init__.py
-
 import re
 
-
-PY_RULE = {
-    "block_comment": ['"""', "'''"],
-    "line_comment": "#"
-}
-
-JAVA_RULE = {
-    "block_comment": '/*',
-    "line_comment": "//"
-}
-
-HTML_RULE = {
-    "block_comment": "<!--",
-    "line_comment": "<!--"
-}
-
-CSS_RULE = {
-    "block_comment": '/*',
-    "line_comment": "/*"
-}
-
-JS_RULE = {
-    "block_comment": '/*',
-    "line_comment": "//"
-}
-
-SQL_RULE = {
-    "block_comment": "/*",
-    "line_comment": ["-- ", "#"]
-}
-
-SH_RULE = {
-    "block_comment": "#",
-    "line_comment": "#"
-}
-
-
-def get_rule(_path):
-    if _path.split('.')[-1] == 'py':
-        return PY_RULE
-    elif _path.split('.')[-1] == 'java':
-        return JAVA_RULE
-    elif _path.split('.')[-1] == 'html':
-        return HTML_RULE
-    elif _path.split('.')[-1] in ['js', 'vue', 'ts', 'xml']:
-        return JS_RULE
-    elif _path.split('.')[-1] == 'css':
-        return CSS_RULE
+from code_analysis.re_statement import RegularRule
 
 
 class CodeAnalysis:
@@ -68,6 +20,7 @@ class CodeAnalysis:
     _emptyCodeLine = 0
 
     def __init__(self, datas=None):
+        self._re_rule = RegularRule()
         if datas is None:
             datas = list()
         self.datas = datas
@@ -86,30 +39,10 @@ class CodeAnalysis:
                    self._emptyCodeLine
 
         for data in self.datas:
-            rule = get_rule(data['newPath'])
-            add = [_[1:].lstrip() for _ in data['diff'].split('\n') if _.startswith('+')]
-            delete = [_[1:].lstrip() for _ in data['diff'].split('\n') if _.startswith('-')]
-            if data['deletedFile']:
-                self._delete_files(delete, rule)
-            elif data['newFile']:
-                self._new_files(add, rule)
-            else:
-                self._old_files(add, delete, rule)
-
-    def _new_files(self, add, _rule):
-        for add_str in add:
-            if len(add_str) == 0:
-                self._emptyCodeLine += 1
-            line_comment = re.findall(r'^%s.*' % _rule['line_comment'], add_str)
-            block_comment = re.findall(r'^%s.*' % _rule['block_comment'], add_str)
-            self._notesCodeLine += len(line_comment)
-            self._notesCodeLine += len(block_comment)
-            self._effectiveCodeLine = len(add) + self._notesCodeLine + self._emptyCodeLine
-            self._addCodeLine += self._effectiveCodeLine
-
-    def _old_files(self, add, delete, _rule):
-        self._new_files(add, _rule)
-        self._delete_files(delete, _rule)
+            suffix = data['newPath'].split('.')[-1]
+            block, line = self._re_rule.get(suffix)
+            block_content = block.match(data['diff'])
+            line_content = line.match(data['diff'])
 
     def _delete_files(self, delete, _rule):
         for del_str in delete:
@@ -123,4 +56,8 @@ class CodeAnalysis:
             self._delCodeLine += self._effectiveCodeLine
 
     def result(self):
-        return self._addCodeLine, self._delCodeLine, self._effectiveCodeLine, self._notesCodeLine, self._emptyCodeLine
+        return {"add": self._addCodeLine,
+                "del": self._delCodeLine,
+                "effect": self._effectiveCodeLine,
+                "notes": self._notesCodeLine,
+                "empty": self._emptyCodeLine}
