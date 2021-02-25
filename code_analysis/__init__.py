@@ -8,14 +8,16 @@ from code_analysis.re_statement import RegularRule
 
 
 def _calculate_list_diff(list_a: list, list_b: list):
-    list_c = copy.deepcopy(list_a)
-    while len(list_b) > 0:
-        if list_b[0] in list_c:
-            list_c.remove(list_b[0])
-            list_b.remove(list_b[0])
+    subtracted = copy.deepcopy(list_a)
+    be_subtracted = copy.deepcopy(list_b)
+    result = copy.deepcopy(subtracted)
+    while len(be_subtracted) > 0:
+        if be_subtracted[0] in result:
+            result.remove(be_subtracted[0])
+            be_subtracted.remove(be_subtracted[0])
         else:
             break
-    return list_c
+    return result
 
 
 class CodeAnalysis:
