@@ -17,34 +17,44 @@ class RegularRule:
         :param item:
         :return:
         """
+        is_sh = False
+        is_front_end = False
         if item == 'py':
             file_suffix = PY_RULE
         elif item in self._DEFAULT_LIST:
             file_suffix = DEFAULT_RULE
         elif item in ['xml', 'html']:
+            is_front_end = True
             file_suffix = ML_RULE
         elif item in ['css', 'sass', 'php']:
+            is_front_end = True
             file_suffix = CSS_PHP_RULE
         elif item == 'sql':
             file_suffix = SQL_RULE
         elif item == 'sh':
+            is_sh = True
             file_suffix = SH_RULE
         else:
             raise Exception('该文件类型未添加至模板文件中。')
 
-        return self._str2re(file_suffix, True) if item == 'sh' else self._str2re(file_suffix)
+        return self._str2re(file_suffix, is_sh, is_front_end)
 
     @staticmethod
-    def _str2re(_rule: dict, is_sh=False):
-        line = _rule.get('line_comment')
-        line = '%s(\s|.)' % line
-        line_re = re.compile(r'%s' % line)
+    def _str2re(_rule: dict, is_sh: bool, is_front_end: bool):
+        if is_front_end:
+            line = _rule.get('line_comment').split(' ')
+            line_re_str = '{0[0]}[\s\S]*?{0[1]}'.format(line)
+            line_regular = re.compile(r'%s' % line_re_str, re.S)
+        else:
+            line = _rule.get('line_comment').split(' ')[:1]
+            line_re_str = '%s(\s|.)' % line[0]
+            line_regular = re.compile(r'%s' % line_re_str, re.S)
 
         if is_sh:
-            return line_re, line_re
+            return line_regular, line, line_regular, line
 
         block = _rule.get('block_comment').split(' ')
-        block = '{0[0]}(\s|.){0[1]}'.format(block)
-        block_re = re.compile(r'%s' % block)
+        block_re_str = '{0[0]}[\s\S]*?{0[1]}'.format(block)
+        block_regular = re.compile(r'%s' % block_re_str, re.S)
 
-        return block_re, line_re
+        return block_regular, block, line_regular, block
