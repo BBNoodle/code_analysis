@@ -2,9 +2,7 @@
 # @Time : 2/7/21 4:36 PM 
 # @Author : mxt
 # @File : __init__.py
-import re
 import copy
-import numpy as np
 
 from code_analysis.re_statement import RegularRule
 
