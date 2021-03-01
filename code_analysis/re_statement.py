@@ -47,7 +47,7 @@ class RegularRule:
             line_regular = re.compile(r'%s' % line_re_str, re.S)
         else:
             line = _rule.get('line_comment').split(' ')[:1]
-            line_re_str = '%s(\s|.)' % line[0]
+            line_re_str = '%s(.*)' % line[0]
             line_regular = re.compile(r'%s' % line_re_str, re.S)
 
         if is_sh:
