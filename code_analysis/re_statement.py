@@ -57,4 +57,4 @@ class RegularRule:
         block_re_str = '{0[0]}[\s\S]*?{0[1]}'.format(block)
         block_regular = re.compile(r'%s' % block_re_str, re.S)
 
-        return block_regular, block, line_regular, block
+        return block_regular, block, line_regular, line
