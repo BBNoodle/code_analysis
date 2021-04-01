@@ -7,17 +7,14 @@ import copy
 from code_analysis.re_statement import RegularRule
 
 
-def _calculate_list_diff(list_a: list, list_b: list):
-    subtracted = copy.deepcopy(list_a)
-    be_subtracted = copy.deepcopy(list_b)
-    result = copy.deepcopy(subtracted)
-    while len(be_subtracted) > 0:
-        if be_subtracted[0] in result:
-            result.remove(be_subtracted[0])
-            be_subtracted.remove(be_subtracted[0])
-        else:
-            break
-    return result
+def _calculate_list_diff(target: list, be_subtracted: list):
+    for item in be_subtracted:
+        try:
+            index = target.index(item)
+            del target[index]
+        except:
+            target.append(item)
+    return target
 
 
 class CodeAnalysis:
