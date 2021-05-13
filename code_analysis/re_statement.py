@@ -9,7 +9,9 @@ from code_analysis.configure import *
 
 
 class RegularRule:
-    _DEFAULT_LIST = ['c', 'h', 'hpp', 'hxx', 'cpp', 'cc', 'cxx', 'C', 'c++', 'java', 'js', 'vue', 'ts', 'ftl']
+    _DEFAULT_LIST = [
+        'c', 'h', 'hpp', 'hxx', 'cpp', 'cc', 'cxx', 'C', 'c++', 'java', 'js', 'vue', 'ts', 'ftl', 'properties', 'jsp'
+    ]
 
     def get(self, item='c'):
         """
@@ -29,16 +31,20 @@ class RegularRule:
         elif item in ['css', 'sass', 'php']:
             is_front_end = True
             file_suffix = CSS_PHP_RULE
+        elif item == 'jsp':
+            is_front_end = True
+            file_suffix = JSP_RULE
         elif item == 'ftl':
             is_front_end = True
             file_suffix = FTL_RULE
         elif item == 'sql':
             file_suffix = SQL_RULE
-        elif item == 'sh':
+        elif item in ['sh', 'properties']:
             is_sh = True
             file_suffix = SH_RULE
         else:
-            raise Exception('该文件类型未添加至模板文件中。')
+            print(f"该文件类型::{item}::未添加至模板文件中。")
+            return True, False, False, False
 
         return self._str2re(file_suffix, is_sh, is_front_end)
 

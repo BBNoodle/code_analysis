@@ -21,6 +21,12 @@ ML_RULE = {
     "line_comment": "<!-- -->"
 }
 
+# JSP
+JSP_RULE = {
+    "block_comment": "<%-- --%>",
+    "line_comment": "<%-- --%>"
+}
+
 # FTL
 FTL_RULE = {
     "block_comment": "<#-- -->",
