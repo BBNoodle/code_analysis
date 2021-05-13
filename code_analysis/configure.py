@@ -21,6 +21,12 @@ ML_RULE = {
     "line_comment": "<!-- -->"
 }
 
+# FTL
+FTL_RULE = {
+    "block_comment": "<#-- -->",
+    "line_comment": "<#-- -->"
+}
+
 CSS_PHP_RULE = {
     "block_comment": '/* \\*/',
     "line_comment": "/* \\*/"

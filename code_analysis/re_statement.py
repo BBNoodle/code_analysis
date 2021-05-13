@@ -9,7 +9,7 @@ from code_analysis.configure import *
 
 
 class RegularRule:
-    _DEFAULT_LIST = ['c', 'h', 'hpp', 'hxx', 'cpp', 'cc', 'cxx', 'C', 'c++', 'java', 'js', 'vue', 'ts']
+    _DEFAULT_LIST = ['c', 'h', 'hpp', 'hxx', 'cpp', 'cc', 'cxx', 'C', 'c++', 'java', 'js', 'vue', 'ts', 'ftl']
 
     def get(self, item='c'):
         """
@@ -29,6 +29,9 @@ class RegularRule:
         elif item in ['css', 'sass', 'php']:
             is_front_end = True
             file_suffix = CSS_PHP_RULE
+        elif item == 'ftl':
+            is_front_end = True
+            file_suffix = FTL_RULE
         elif item == 'sql':
             file_suffix = SQL_RULE
         elif item == 'sh':
