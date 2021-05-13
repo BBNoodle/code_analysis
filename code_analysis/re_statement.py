@@ -28,7 +28,7 @@ class RegularRule:
         elif item in ['xml', 'html']:
             is_front_end = True
             file_suffix = ML_RULE
-        elif item in ['css', 'sass', 'php']:
+        elif item in ['css', 'scss', 'sass', 'php']:
             is_front_end = True
             file_suffix = CSS_PHP_RULE
         elif item == 'jsp':
