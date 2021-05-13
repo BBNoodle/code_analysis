@@ -2,8 +2,6 @@
 # @Time : 2/7/21 4:36 PM 
 # @Author : mxt
 # @File : __init__.py
-import copy
-
 from code_analysis.re_statement import RegularRule
 
 
