@@ -6,7 +6,7 @@
 # Python
 PY_RULE = {
     "block_comment": '""" """',
-    "line_comment": "# "
+    "line_comment": "#"
 }
 
 # C, C++, C#, JAVA, JS

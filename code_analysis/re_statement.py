@@ -19,47 +19,50 @@ class RegularRule:
         :param item:
         :return:
         """
-        is_sh = False
-        is_front_end = False
         if item == 'py':
+            file_type = "PY"
             file_suffix = PY_RULE
         elif item in self._DEFAULT_LIST:
+            file_type = "DEFAULT"
             file_suffix = DEFAULT_RULE
         elif item in ['xml', 'html']:
-            is_front_end = True
+            file_type = "FRONTEND"
             file_suffix = ML_RULE
         elif item in ['css', 'scss', 'sass', 'php']:
-            is_front_end = True
+            file_type = "FRONTEND"
             file_suffix = CSS_PHP_RULE
         elif item == 'jsp':
-            is_front_end = True
+            file_type = "FRONTEND"
             file_suffix = JSP_RULE
         elif item == 'ftl':
-            is_front_end = True
+            file_type = "FRONTEND"
             file_suffix = FTL_RULE
         elif item == 'sql':
+            file_type = "SQL"
             file_suffix = SQL_RULE
         elif item in ['sh', 'properties']:
-            is_sh = True
+            file_type = "SH"
             file_suffix = SH_RULE
         else:
-            return True, False, False, False
+            return True, False
 
-        return self._str2re(file_suffix, is_sh, is_front_end)
+        return self._str2re(file_suffix, file_type)
 
     @staticmethod
-    def _str2re(_rule: dict, is_sh: bool, is_front_end: bool):
-        if is_front_end:
+    def _str2re(_rule: dict, file_type: str):
+        if file_type == "FRONTEND":
             line = _rule.get('line_comment').split(' ')
             line_re_str = '{0[0]}[\s\S]*?{0[1]}'.format(line)
             line_regular = re.compile(r'%s' % line_re_str, re.S)
-        else:
+        elif file_type == "SH":
             line = _rule.get('line_comment').split(' ')[:1]
             line_re_str = '%s(.*?)\n' % line[0]
             line_regular = re.compile(r'%s' % line_re_str, re.S)
-
-        if is_sh:
             return line_regular, line, line_regular, line
+        else:
+            line = _rule.get('line_comment').split(' ')[:1]
+            line_re_str = '%s.*?(?=\n)' % line[0]
+            line_regular = re.compile(r'%s' % line_re_str, re.S)
 
         block = _rule.get('block_comment').split(' ')
         block_re_str = '{0[0]}[\s\S]*?{0[1]}'.format(block)

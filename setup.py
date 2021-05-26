@@ -10,7 +10,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="GITCodeAnalysis",
-    version="0.2.6",
+    version="0.2.7",
     author="Maoxinteng",
     author_email="1214403402@qq.com",
     description="Git Code Analysis",
