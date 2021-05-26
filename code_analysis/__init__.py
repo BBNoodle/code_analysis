@@ -47,6 +47,8 @@ class CodeAnalysis:
                    self._delNotesCodeLine, self._addEmptyCodeLine, self._delEmptyCodeLine
 
         for data in self.datas:
+            if len(data.get('diff')) == 0:
+                continue
             suffix = data['newPath'].split('.')[-1]
             content = data.get('diff').split('\n', maxsplit=1)[1]
             add_content = [_ for _ in content.split('\n') if _.startswith('+')]
