@@ -44,7 +44,7 @@ class RegularRule:
             file_type = "SH"
             file_suffix = SH_RULE
         else:
-            return True, False
+            return True, False, False, False
 
         return self._str2re(file_suffix, file_type)
 
