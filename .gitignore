@@ -15,6 +15,7 @@ venv/
 build/
 develop-eggs/
 dist/
+code_test/
 downloads/
 eggs/
 .eggs/
