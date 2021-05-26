@@ -2,6 +2,7 @@
 # @Time : 2/7/21 4:36 PM 
 # @Author : mxt
 # @File : __init__.py
+import re
 from code_analysis.re_statement import RegularRule
 
 
@@ -47,60 +48,42 @@ class CodeAnalysis:
 
         for data in self.datas:
             suffix = data['newPath'].split('.')[-1]
-            content = data.get('diff')
+            content = data.get('diff').split('\n', maxsplit=1)[1]
             add_content = [_ for _ in content.split('\n') if _.startswith('+')]
             del_content = [_ for _ in content.split('\n') if _.startswith('-')]
 
             # 扫描所有空行数
-            add_empty = len(add_content) - len([_ for _ in add_content if len(_.replace('+', '')) != 0])
-            del_empty = len(del_content) - len([_ for _ in del_content if len(_.replace('-', '')) != 0])
+            self._addEmptyCodeLine = len(add_content) - len([_ for _ in add_content if len(_.replace('+', '')) != 0])
+            self._delEmptyCodeLine = len(del_content) - len([_ for _ in del_content if len(_.replace('-', '')) != 0])
 
             # 扫描注释行
             block, b_re, line, l_re = self._re_rule.get(suffix)
             if block and isinstance(block, bool):
                 continue
             block_content = block.findall(content)
-            add_block, del_block = self._replace_iter(block_content, b_re)
+            add_notes_block, del_notes_block = self._replace_iter(block_content, b_re)
             line_content = line.findall(content)
-            add_line, del_line = self._replace_iter(line_content, l_re)
+            add_notes_line, del_notes_line = self._replace_iter(line_content, l_re)
 
-            # 去除空行之后的总行
-            add_content = [_ for _ in add_content if len(_.replace('+', '')) != 0]
-            del_content = [_ for _ in del_content if len(_.replace('-', '')) != 0]
+            # 注释行数
+            self._addNotesCodeLine = len(add_notes_block) + len(add_notes_line)
+            self._delNotesCodeLine = len(del_notes_block) + len(del_notes_line)
 
-            # 注释的空行数
-            notes_add_empty = len(add_block) - len([_ for _ in add_block if len(_.replace('+', '')) != 0])
-            notes_del_empty = len(del_block) - len([_ for _ in del_block if len(_.replace('+', '')) != 0])
-
-            # 实际空行数
-            self._addEmptyCodeLine = add_empty - notes_add_empty
-            self._delEmptyCodeLine = del_empty - notes_del_empty
-
-            # 去除空行之后的注释行
-            add_block = [_ for _ in add_block if len(_.replace('+', '')) != 0]
-            del_block = [_ for _ in del_block if len(_.replace('-', '')) != 0]
-
-            # 过滤注释行
-            add_content = _calculate_list_diff(_calculate_list_diff(add_content, add_block), add_line)
-            del_content = _calculate_list_diff(_calculate_list_diff(del_content, del_block), del_line)
-
-            # 实际有效代码行数
-            self._addCodeLine = len(add_content)
-            self._delCodeLine = len(del_content)
-
-            # 实际注释行数
-            self._addNotesCodeLine = len(add_block) + len(add_line)
-            self._addNotesCodeLine = len(del_block) + len(del_line)
+            # 有效代码行数
+            self._addCodeLine = len(add_content) - self._addEmptyCodeLine - self._addNotesCodeLine
+            self._delCodeLine = len(del_content) - self._delEmptyCodeLine - self._delNotesCodeLine
 
     @staticmethod
     def _replace_iter(content_list: list, re_rule: list):
         add = list()
         delete = list()
         for content in content_list:
-            for _ in re_rule:
-                content = content.replace(_, '', 1)
+            add.append(re_rule[0])
+            delete.append(re_rule[0])
             add += [_ for _ in content.split('\n') if _.startswith('+')]
             delete += [_ for _ in content.split('\n') if _.startswith('-')]
+        add = list() if len(add) == len(content_list) else add
+        delete = list() if len(delete) == len(content_list) else delete
         return add, delete
 
     def result(self):

@@ -43,7 +43,6 @@ class RegularRule:
             is_sh = True
             file_suffix = SH_RULE
         else:
-            print(f"该文件类型::{item}::未添加至模板文件中。")
             return True, False, False, False
 
         return self._str2re(file_suffix, is_sh, is_front_end)
@@ -56,7 +55,7 @@ class RegularRule:
             line_regular = re.compile(r'%s' % line_re_str, re.S)
         else:
             line = _rule.get('line_comment').split(' ')[:1]
-            line_re_str = '%s(.*)' % line[0]
+            line_re_str = '%s(.*?)\n' % line[0]
             line_regular = re.compile(r'%s' % line_re_str, re.S)
 
         if is_sh:
