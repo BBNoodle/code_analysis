@@ -54,10 +54,6 @@ class CodeAnalysis:
             add_content = [_ for _ in content.split('\n') if _.startswith('+')]
             del_content = [_ for _ in content.split('\n') if _.startswith('-')]
 
-            # 扫描所有空行数
-            self._addEmptyCodeLine = len(add_content) - len([_ for _ in add_content if len(_.replace('+', '')) != 0])
-            self._delEmptyCodeLine = len(del_content) - len([_ for _ in del_content if len(_.replace('-', '')) != 0])
-
             # 扫描注释行
             block, block_re, line, line_re = self._re_rule.get(suffix)
             if block and isinstance(block, bool):
@@ -67,13 +63,25 @@ class CodeAnalysis:
             line_content = self._scan_line_content(add_content, del_content, line.findall(content))
             add_notes_line, del_notes_line = self._replace_iter(line_content, line_re, False)
 
+            add_remove_empty = len([_ for _ in add_content if len(_.replace('+', '')) != 0])
+            del_remove_empty = len([_ for _ in del_content if len(_.replace('-', '')) != 0])
+
             # 注释行数
-            self._addNotesCodeLine = len(add_notes_block) + len(add_notes_line)
-            self._delNotesCodeLine = len(del_notes_block) + len(del_notes_line)
+            self._addNotesCodeLine += len(add_notes_block) + len(add_notes_line)
+            self._delNotesCodeLine += len(del_notes_block) + len(del_notes_line)
+
+            # 扫描所有空行数
+            self._addEmptyCodeLine += len(add_content) - add_remove_empty
+            self._delEmptyCodeLine += len(del_content) - del_remove_empty
+
+            add_code = add_remove_empty - len(add_notes_block) - len(add_notes_line)
+            del_code = del_remove_empty - len(del_notes_block) - len(del_notes_line)
 
             # 有效代码行数
-            self._addCodeLine = len(add_content) - self._addEmptyCodeLine - self._addNotesCodeLine
-            self._delCodeLine = len(del_content) - self._delEmptyCodeLine - self._delNotesCodeLine
+            self._addCodeLine += add_code
+            self._delCodeLine += del_code
+
+            a = 1
 
     @staticmethod
     def _scan_line_content(add_list: list, delete_list: list, line_content_list: list):
@@ -91,7 +99,12 @@ class CodeAnalysis:
                 index = line_content_list.index(item.replace('-', '').replace('\t', ''))
                 del line_content_list[index]
             except:
-                del_surplus.append(item)
+                temp_list = [_.replace('-', '').replace('\t', '') for _ in line_content_list]
+                if item.replace('-', '').replace('\t', '') in temp_list:
+                    index = temp_list.index(item.replace('-', '').replace('\t', ''))
+                    del line_content_list[index]
+                else:
+                    del_surplus.append(item)
 
         add_list = [_ for _ in add_list if _ not in add_surplus]
         del_list = [_ for _ in delete_list if _ not in del_surplus]
