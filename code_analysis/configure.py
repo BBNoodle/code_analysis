@@ -9,16 +9,22 @@ PY_RULE = {
     "line_comment": "#"
 }
 
-# C, C++, C#, JAVA, JS
+# C, C++, C#, JAVA, JS, le
 DEFAULT_RULE = {
     "block_comment": '/\* \*/',
     "line_comment": "\/\/"
 }
 
-# HTML, XML
-ML_RULE = {
+# XML
+XML_RULE = {
     "block_comment": "<!-- -->",
     "line_comment": "<!-- -->"
+}
+
+# HTML
+HTML_RULE = {
+    "block_comment": "<!-- -->",
+    "line_comment": "\/\/"
 }
 
 # JSP
