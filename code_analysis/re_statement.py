@@ -10,7 +10,8 @@ from code_analysis.configure import *
 
 class RegularRule:
     _DEFAULT_LIST = [
-        'c', 'h', 'hpp', 'hxx', 'cpp', 'cc', 'cxx', 'C', 'c++', 'java',
+        'c', 'h', 'hpp', 'hxx', 'cpp', 'cc', 'cxx', 'C', 'c++',
+        'cs', 'java',
         'js', 'vue', 'ts', 'tsx', 'less', 'scss', 'ftl', 'properties', 'jsp'
     ]
 
