@@ -2,8 +2,6 @@
 # @Time : 2/7/21 4:36 PM 
 # @Author : mxt
 # @File : __init__.py
-import re
-from six.moves import xrange
 from code_analysis.re_statement import RegularRule
 
 
@@ -23,6 +21,17 @@ def _calculate_list_diff(target: list, be_subtracted: list, is_add: bool):
             else:
                 _surplus.append(item)
     return _surplus
+
+
+def remove_redundant_data(remove_target: list, be_subtracted: list):
+    remove_target = remove_target.copy()
+    for item in be_subtracted:
+        try:
+            index = remove_target.index(item)
+            del remove_target[index]
+        except:
+            continue
+    return remove_target, be_subtracted
 
 
 class CodeAnalysis:
@@ -78,6 +87,10 @@ class CodeAnalysis:
             line_content = self._scan_content_symbol(add_content, del_content, line.findall(content))
             add_notes_line, del_notes_line = self._replace_iter(line_content)
 
+            # 处理注释重复数据
+            add_notes_block, add_notes_line = remove_redundant_data(add_notes_block, add_notes_line)
+            del_notes_block, del_notes_line = remove_redundant_data(del_notes_block, del_notes_line)
+
             add_remove_empty = len([_ for _ in add_content if len(_.replace('+', '')) != 0])
             del_remove_empty = len([_ for _ in del_content if len(_.replace('-', '')) != 0])
 
@@ -107,8 +120,8 @@ class CodeAnalysis:
         add = list()
         delete = list()
         for content in content_list:
-            add += [_ for _ in content.split('\n') if _.startswith('+')]
-            delete += [_ for _ in content.split('\n') if _.startswith('-')]
+            add += [_ for _ in content.split('\n') if _.startswith('+') and len(_.replace("+", "")) > 0]
+            delete += [_ for _ in content.split('\n') if _.startswith('-') and len(_.replace("-", "")) > 0]
         return add, delete
 
     def result(self):
