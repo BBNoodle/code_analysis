@@ -2,25 +2,25 @@
 # @Time : 2/7/21 4:36 PM 
 # @Author : mxt
 # @File : __init__.py
+import time
 from code_analysis.re_statement import RegularRule
 
 
 def _calculate_list_diff(target: list, be_subtracted: list, is_add: bool):
-    _surplus = list()
     symbol = "+" if is_add else "-"
     target = target.copy()
     for item in be_subtracted:
         try:
             index = target.index(item.replace(symbol, '').replace('\t', '').replace(' ', ''))
             del target[index]
+            continue
         except:
             del_temp = [_.replace(symbol, '').replace('\t', '').replace(' ', '') for _ in target]
             if item.replace(symbol, '').replace('\t', '').replace(' ', '') in del_temp:
                 index = del_temp.index(item.replace(symbol, '').replace('\t', '').replace(' ', ''))
                 del target[index]
             else:
-                _surplus.append(item)
-    return _surplus
+                yield item
 
 
 def remove_redundant_data(remove_target: list, be_subtracted: list):
@@ -65,7 +65,6 @@ class CodeAnalysis:
                    self._delNotesCodeLine, self._addEmptyCodeLine, self._delEmptyCodeLine
 
         for data in self.datas:
-            block_content = list()
             if len(data.get('diff')) == 0:
                 continue
             suffix = data['newPath'].split('.')[-1].lower()
@@ -77,11 +76,7 @@ class CodeAnalysis:
             block, line = self._re_rule.get(suffix)
             if block and isinstance(block, bool):
                 continue
-            for _ in block.findall(content):
-                if isinstance(_.split('\n'), list):
-                    block_content += _.split('\n')
-                else:
-                    block_content.append(_)
+            block_content = self._get_block_content(block, content)
             block_content = self._scan_content_symbol(add_content, del_content, block_content)
             add_notes_block, del_notes_block = self._replace_iter(block_content)
             line_content = self._scan_content_symbol(add_content, del_content, line.findall(content))
@@ -110,9 +105,21 @@ class CodeAnalysis:
             self._delCodeLine += del_code
 
     @staticmethod
+    def _get_block_content(block, content):
+        block_content = list()
+        for _ in block.findall(content):
+            if isinstance(_.split('\n'), list):
+                block_content += _.split('\n')
+            else:
+                block_content.append(_)
+        return block_content
+
+    @staticmethod
     def _scan_content_symbol(add_list: list, delete_list: list, line_content_list: list):
-        add_list = [_ for _ in add_list if _ not in _calculate_list_diff(line_content_list, add_list, True)]
-        del_list = [_ for _ in delete_list if _ not in _calculate_list_diff(line_content_list, delete_list, False)]
+        add_diff_list = [_ for _ in _calculate_list_diff(line_content_list, add_list, True)]
+        del_diff_list = [_ for _ in _calculate_list_diff(line_content_list, delete_list, False)]
+        add_list = [_ for _ in add_list if _ not in add_diff_list]
+        del_list = [_ for _ in delete_list if _ not in del_diff_list]
         return add_list + del_list
 
     @staticmethod
