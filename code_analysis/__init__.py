@@ -66,7 +66,7 @@ class CodeAnalysis:
         for data in self.datas:
             if len(data.get('diff')) == 0:
                 continue
-            suffix = data['newPath'].split('.')[-1].lower()
+            suffix = data['new_path'].split('.')[-1].lower()
             content = data.get('diff').split('\n', maxsplit=1)[1]
             add_content = [_ for _ in content.split('\n') if _.startswith('+')]
             del_content = [_ for _ in content.split('\n') if _.startswith('-')]
